@@ -22,12 +22,12 @@
 
 ## Prerequisites
 
-| Tool | Version |
-|------|---------|
-| Python | 3.11+ |
-| Docker | 24+ |
-| Docker Compose | v2 (plugin) |
-| PostgreSQL | 15+ (or use the Compose service) |
+| Tool           | Version                          |
+| -------------- | -------------------------------- |
+| Python         | 3.11+                            |
+| Docker         | 24+                              |
+| Docker Compose | v2 (plugin)                      |
+| PostgreSQL     | 15+ (or use the Compose service) |
 
 ---
 
@@ -54,6 +54,8 @@ pip install -r requirements.txt
 ```bash
 # Copy your .keras or .h5 model to:
 cp /path/to/your/model.keras ai/ml/model.keras
+Download your model here:
+# https://drive.google.com/file/d/1ACO5iYduU3wNHMMWb5Z9HksU7zVPZVYx/view?usp=sharing
 ```
 
 ### 4. Run database migrations
@@ -116,8 +118,9 @@ docker compose up -d --build
 ```
 
 Services started:
-- `spacelens_db`    — PostgreSQL 15 on internal network
-- `spacelens_web`   — Django + Gunicorn on port 8000 (internal)
+
+- `spacelens_db` — PostgreSQL 15 on internal network
+- `spacelens_web` — Django + Gunicorn on port 8000 (internal)
 - `spacelens_nginx` — Nginx reverse proxy on ports **80** / **443**
 
 ### 4. Check logs
@@ -152,26 +155,26 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 
 ## Environment Variables Reference
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `SECRET_KEY` | ✅ | — | Django secret key — generate with `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"` |
-| `DEBUG` | — | `False` | Set `True` for development only |
-| `ALLOWED_HOSTS` | ✅ | — | Comma-separated list: `yourdomain.com,www.yourdomain.com` |
-| `DATABASE_URL` | ✅ | — | PostgreSQL DSN: `postgres://user:pass@host:5432/dbname` |
-| `WATSONX_API_KEY` | ✅ | — | IBM Cloud API key |
-| `WATSONX_PROJECT_ID` | ✅ | — | watsonx.ai project UUID |
-| `WATSONX_URL` | — | `https://us-south.ml.cloud.ibm.com` | Regional endpoint |
-| `WATSONX_MODEL_ID` | — | `ibm/granite-13b-instruct-v2` | Granite model identifier |
-| `ML_MODEL_PATH` | — | `ai/ml/model.keras` | Path to trained `.keras` / `.h5` model |
-| `ML_CLASS_NAMES` | — | EuroSAT 10 classes | Comma-separated class labels matching model output order |
-| `DEFAULT_FROM_EMAIL` | — | `noreply@spacelens.ai` | Sender address for password-reset emails |
-| `DJANGO_SUPERUSER_USERNAME` | — | — | Auto-create superuser on container start |
-| `DJANGO_SUPERUSER_PASSWORD` | — | — | Superuser password |
-| `DJANGO_SUPERUSER_EMAIL` | — | — | Superuser email |
-| `SECURE_SSL_REDIRECT` | — | `True` (prod) | Set `False` if SSL is terminated upstream |
-| `POSTGRES_DB` | — | `spacelens_db` | Compose DB name |
-| `POSTGRES_USER` | — | `spacelens_user` | Compose DB user |
-| `POSTGRES_PASSWORD` | — | `spacelens_pass` | Compose DB password — **change in production** |
+| Variable                    | Required | Default                             | Description                                                                                                                                    |
+| --------------------------- | -------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SECRET_KEY`                | ✅       | —                                   | Django secret key — generate with `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"` |
+| `DEBUG`                     | —        | `False`                             | Set `True` for development only                                                                                                                |
+| `ALLOWED_HOSTS`             | ✅       | —                                   | Comma-separated list: `yourdomain.com,www.yourdomain.com`                                                                                      |
+| `DATABASE_URL`              | ✅       | —                                   | PostgreSQL DSN: `postgres://user:pass@host:5432/dbname`                                                                                        |
+| `WATSONX_API_KEY`           | ✅       | —                                   | IBM Cloud API key                                                                                                                              |
+| `WATSONX_PROJECT_ID`        | ✅       | —                                   | watsonx.ai project UUID                                                                                                                        |
+| `WATSONX_URL`               | —        | `https://us-south.ml.cloud.ibm.com` | Regional endpoint                                                                                                                              |
+| `WATSONX_MODEL_ID`          | —        | `ibm/granite-13b-instruct-v2`       | Granite model identifier                                                                                                                       |
+| `ML_MODEL_PATH`             | —        | `ai/ml/model.keras`                 | Path to trained `.keras` / `.h5` model                                                                                                         |
+| `ML_CLASS_NAMES`            | —        | EuroSAT 10 classes                  | Comma-separated class labels matching model output order                                                                                       |
+| `DEFAULT_FROM_EMAIL`        | —        | `noreply@spacelens.ai`              | Sender address for password-reset emails                                                                                                       |
+| `DJANGO_SUPERUSER_USERNAME` | —        | —                                   | Auto-create superuser on container start                                                                                                       |
+| `DJANGO_SUPERUSER_PASSWORD` | —        | —                                   | Superuser password                                                                                                                             |
+| `DJANGO_SUPERUSER_EMAIL`    | —        | —                                   | Superuser email                                                                                                                                |
+| `SECURE_SSL_REDIRECT`       | —        | `True` (prod)                       | Set `False` if SSL is terminated upstream                                                                                                      |
+| `POSTGRES_DB`               | —        | `spacelens_db`                      | Compose DB name                                                                                                                                |
+| `POSTGRES_USER`             | —        | `spacelens_user`                    | Compose DB user                                                                                                                                |
+| `POSTGRES_PASSWORD`         | —        | `spacelens_pass`                    | Compose DB password — **change in production**                                                                                                 |
 
 ---
 
@@ -228,10 +231,10 @@ python manage.py makemigrations
 
 ## Static & Media Files
 
-| Location | Served by | Notes |
-|----------|-----------|-------|
-| `staticfiles/` | Nginx (`/static/`) + WhiteNoise (fallback) | Populated by `collectstatic` |
-| `media/` | Nginx (`/media/`) | User-uploaded satellite images |
+| Location       | Served by                                  | Notes                          |
+| -------------- | ------------------------------------------ | ------------------------------ |
+| `staticfiles/` | Nginx (`/static/`) + WhiteNoise (fallback) | Populated by `collectstatic`   |
+| `media/`       | Nginx (`/media/`)                          | User-uploaded satellite images |
 
 ```bash
 # Collect static files
@@ -249,8 +252,9 @@ GET /health/
 ```
 
 Response:
+
 ```json
-{"status": "ok", "database": "ok"}
+{ "status": "ok", "database": "ok" }
 ```
 
 Used by Docker `HEALTHCHECK` and Nginx upstream monitoring. Returns **503** if the database is unreachable.
@@ -325,4 +329,4 @@ spacelens/
 
 ---
 
-*Built with IBM watsonx.ai Granite · TensorFlow · Django · PostgreSQL*
+_Built with IBM watsonx.ai Granite · TensorFlow · Django · PostgreSQL_
