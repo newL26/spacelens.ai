@@ -5,9 +5,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from core.health import HealthCheckView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+
+    # Health check (no auth — used by Docker / load balancer)
+    path("health/", HealthCheckView.as_view(), name="health"),
 
     # Public landing page
     path("", include("core.urls", namespace="core")),

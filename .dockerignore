@@ -1,0 +1,57 @@
+# ── Python artifacts ──────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Virtual environments ──────────────────────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+
+# ── Django runtime dirs (populated by entrypoint or volumes) ──────────────────
+staticfiles/
+media/
+logs/
+
+# ── Local / dev only ──────────────────────────────────────────────────────────
+db.sqlite3
+*.log
+
+# ── Test & CI artefacts ───────────────────────────────────────────────────────
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# ── IDE ───────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Git ───────────────────────────────────────────────────────────────────────
+.git/
+.gitignore
+
+# ── Docker ────────────────────────────────────────────────────────────────────
+docker-compose*.yml
+.dockerignore
+
+# ── ML model (large binary — mount as volume or download separately) ──────────
+ai/ml/*.h5
+ai/ml/*.keras
+ai/ml/*.pb
+ai/ml/saved_model/
+
+# ── Docs & CI ────────────────────────────────────────────────────────────────
+*.md
+.github/
+docs/

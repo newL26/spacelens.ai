@@ -1,0 +1,99 @@
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║  SpaceLens AI — docker-compose.yml                                      ║
+# ║                                                                          ║
+# ║  Services:                                                               ║
+# ║    db       — PostgreSQL 15                                              ║
+# ║    web      — Django + Gunicorn                                          ║
+# ║    nginx    — Reverse proxy + static/media files                         ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+version: "3.9"
+
+services:
+
+  # ── PostgreSQL ────────────────────────────────────────────────────────────
+  db:
+    image: postgres:15-alpine
+    container_name: spacelens_db
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB:       ${POSTGRES_DB:-spacelens_db}
+      POSTGRES_USER:     ${POSTGRES_USER:-spacelens_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-spacelens_pass}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-spacelens_user} -d ${POSTGRES_DB:-spacelens_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - spacelens_net
+
+  # ── Django Application ────────────────────────────────────────────────────
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: spacelens_web
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DJANGO_SETTINGS_MODULE: spacelens.settings.production
+      DATABASE_URL: postgres://${POSTGRES_USER:-spacelens_user}:${POSTGRES_PASSWORD:-spacelens_pass}@db:5432/${POSTGRES_DB:-spacelens_db}
+    volumes:
+      - media_files:/app/media
+      - static_files:/app/staticfiles
+      - ./ai/ml:/app/ai/ml:ro     # mount model directory read-only
+    expose:
+      - "8000"
+    command: gunicorn
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - spacelens_net
+
+  # ── Nginx ─────────────────────────────────────────────────────────────────
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: spacelens_nginx
+    restart: unless-stopped
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/spacelens.conf:/etc/nginx/conf.d/spacelens.conf:ro
+      - static_files:/app/staticfiles:ro
+      - media_files:/app/media:ro
+      - nginx_logs:/var/log/nginx
+      # Uncomment for HTTPS with Let's Encrypt:
+      # - ./docker/nginx/certs:/etc/nginx/certs:ro
+    networks:
+      - spacelens_net
+
+# ── Volumes ───────────────────────────────────────────────────────────────────
+volumes:
+  postgres_data:
+    driver: local
+  media_files:
+    driver: local
+  static_files:
+    driver: local
+  nginx_logs:
+    driver: local
+
+# ── Networks ──────────────────────────────────────────────────────────────────
+networks:
+  spacelens_net:
+    driver: bridge

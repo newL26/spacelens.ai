@@ -1,0 +1,31 @@
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║  SpaceLens AI — docker-compose.dev.yml                                  ║
+# ║  Override for local development — mounts source code live               ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+version: "3.9"
+
+services:
+
+  db:
+    ports:
+      - "5432:5432"   # expose DB port for local psql / DBeaver
+
+  web:
+    build:
+      target: runtime
+    command: dev
+    environment:
+      DJANGO_SETTINGS_MODULE: spacelens.settings.development
+    volumes:
+      - .:/app                      # live source mount — no rebuild needed
+      - media_files:/app/media
+      - /app/staticfiles            # prevent host staticfiles from masking container's
+    ports:
+      - "8000:8000"                 # access directly without Nginx
+    stdin_open: true
+    tty: true
+
+  # Disable Nginx in dev — access Django directly on :8000
+  nginx:
+    profiles:
+      - production
