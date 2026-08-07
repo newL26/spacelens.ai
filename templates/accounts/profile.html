@@ -108,7 +108,11 @@
 
                 <div class="col-md-6">
                   <div class="sl-form-group mb-0">
-                    <label for="{{ form.first_name.id_for_label }}">First Name</label>
+                    <label for="{{ form.first_name.id_for_label }}"
+                           style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;
+                                  text-transform:uppercase;color:var(--sl-text);display:block;margin-bottom:0.4rem;">
+                      First Name
+                    </label>
                     {{ form.first_name }}
                     {% if form.first_name.errors %}
                       <div class="sl-invalid-feedback">{{ form.first_name.errors|join:" " }}</div>
@@ -118,7 +122,11 @@
 
                 <div class="col-md-6">
                   <div class="sl-form-group mb-0">
-                    <label for="{{ form.last_name.id_for_label }}">Last Name</label>
+                    <label for="{{ form.last_name.id_for_label }}"
+                           style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;
+                                  text-transform:uppercase;color:var(--sl-text);display:block;margin-bottom:0.4rem;">
+                      Last Name
+                    </label>
                     {{ form.last_name }}
                     {% if form.last_name.errors %}
                       <div class="sl-invalid-feedback">{{ form.last_name.errors|join:" " }}</div>
@@ -128,7 +136,11 @@
 
                 <div class="col-12">
                   <div class="sl-form-group mb-0">
-                    <label for="{{ form.email.id_for_label }}">Email Address</label>
+                    <label for="{{ form.email.id_for_label }}"
+                           style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;
+                                  text-transform:uppercase;color:var(--sl-text);display:block;margin-bottom:0.4rem;">
+                      Email Address
+                    </label>
                     {{ form.email }}
                     {% if form.email.errors %}
                       <div class="sl-invalid-feedback">{{ form.email.errors|join:" " }}</div>
@@ -138,35 +150,55 @@
 
                 <div class="col-md-6">
                   <div class="sl-form-group mb-0">
-                    <label for="{{ form.organisation.id_for_label }}">Organisation</label>
+                    <label for="{{ form.organisation.id_for_label }}"
+                           style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;
+                                  text-transform:uppercase;color:var(--sl-text);display:block;margin-bottom:0.4rem;">
+                      Organisation
+                    </label>
                     {{ form.organisation }}
                   </div>
                 </div>
 
                 <div class="col-md-6">
                   <div class="sl-form-group mb-0">
-                    <label for="{{ form.location.id_for_label }}">Location</label>
+                    <label for="{{ form.location.id_for_label }}"
+                           style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;
+                                  text-transform:uppercase;color:var(--sl-text);display:block;margin-bottom:0.4rem;">
+                      Location
+                    </label>
                     {{ form.location }}
                   </div>
                 </div>
 
                 <div class="col-12">
                   <div class="sl-form-group mb-0">
-                    <label for="{{ form.website.id_for_label }}">Website</label>
+                    <label for="{{ form.website.id_for_label }}"
+                           style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;
+                                  text-transform:uppercase;color:var(--sl-text);display:block;margin-bottom:0.4rem;">
+                      Website
+                    </label>
                     {{ form.website }}
                   </div>
                 </div>
 
                 <div class="col-12">
                   <div class="sl-form-group mb-0">
-                    <label for="{{ form.bio.id_for_label }}">Bio</label>
+                    <label for="{{ form.bio.id_for_label }}"
+                           style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;
+                                  text-transform:uppercase;color:var(--sl-text);display:block;margin-bottom:0.4rem;">
+                      Bio
+                    </label>
                     {{ form.bio }}
                   </div>
                 </div>
 
                 <div class="col-12">
                   <div class="sl-form-group mb-0">
-                    <label for="{{ form.avatar.id_for_label }}">Avatar Image</label>
+                    <label for="{{ form.avatar.id_for_label }}"
+                           style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;
+                                  text-transform:uppercase;color:var(--sl-text);display:block;margin-bottom:0.4rem;">
+                      Avatar Image
+                    </label>
                     {{ form.avatar }}
                     <div style="font-size:0.75rem;color:var(--sl-text-muted);margin-top:0.3rem;">
                       JPG, PNG — max 2 MB

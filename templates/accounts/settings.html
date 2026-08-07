@@ -34,7 +34,11 @@
               <input type="hidden" name="action" value="username" />
 
               <div class="sl-form-group">
-                <label for="{{ username_form.username.id_for_label }}">Username</label>
+                <label for="{{ username_form.username.id_for_label }}"
+                       style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;
+                              text-transform:uppercase;color:var(--sl-text);display:block;margin-bottom:0.4rem;">
+                  Username
+                </label>
                 {{ username_form.username }}
                 {% if username_form.username.errors %}
                   <div class="sl-invalid-feedback">
@@ -63,7 +67,11 @@
               <input type="hidden" name="action" value="password" />
 
               <div class="sl-form-group">
-                <label for="{{ password_form.old_password.id_for_label }}">Current Password</label>
+                <label for="{{ password_form.old_password.id_for_label }}"
+                       style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;
+                              text-transform:uppercase;color:var(--sl-text);display:block;margin-bottom:0.4rem;">
+                  Current Password
+                </label>
                 <input type="password" name="old_password"
                        id="{{ password_form.old_password.id_for_label }}"
                        class="sl-form-control" placeholder="Current password"
@@ -71,7 +79,11 @@
               </div>
 
               <div class="sl-form-group">
-                <label for="{{ password_form.new_password1.id_for_label }}">New Password</label>
+                <label for="{{ password_form.new_password1.id_for_label }}"
+                       style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;
+                              text-transform:uppercase;color:var(--sl-text);display:block;margin-bottom:0.4rem;">
+                  New Password
+                </label>
                 <input type="password" name="new_password1"
                        id="{{ password_form.new_password1.id_for_label }}"
                        class="sl-form-control" placeholder="New password"
@@ -79,7 +91,11 @@
               </div>
 
               <div class="sl-form-group">
-                <label for="{{ password_form.new_password2.id_for_label }}">Confirm New Password</label>
+                <label for="{{ password_form.new_password2.id_for_label }}"
+                       style="font-size:0.75rem;font-weight:700;letter-spacing:0.07em;
+                              text-transform:uppercase;color:var(--sl-text);display:block;margin-bottom:0.4rem;">
+                  Confirm New Password
+                </label>
                 <input type="password" name="new_password2"
                        id="{{ password_form.new_password2.id_for_label }}"
                        class="sl-form-control" placeholder="Repeat new password"

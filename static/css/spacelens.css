@@ -79,7 +79,7 @@ h1, h2, h3, h4, h5, h6,
 .stars-bg {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: 0;           /* Base layer — all page content sits at z-index: 1+ */
   pointer-events: none;
   background:
     radial-gradient(ellipse 80% 60% at 50% 0%,   rgba(56,189,248,0.06) 0%, transparent 70%),
@@ -273,6 +273,7 @@ h1, h2, h3, h4, h5, h6,
   top: 0;
   height: 100vh;
   overflow-y: auto;
+  z-index: 2;           /* above sl-app-layout z-index:1, below navbar z-index:1030 */
 }
 
 .sl-sidebar .sidebar-brand {
@@ -338,6 +339,8 @@ h1, h2, h3, h4, h5, h6,
 .sl-app-layout {
   display: flex;
   min-height: calc(100vh - 57px);
+  position: relative;   /* establish stacking context above stars-bg */
+  z-index: 1;
 }
 
 .sl-main-content {
@@ -345,6 +348,26 @@ h1, h2, h3, h4, h5, h6,
   min-width: 0;
   padding: 2rem;
   overflow-y: auto;
+  color: var(--sl-text);
+  position: relative;
+  z-index: 1;
+}
+
+/* Ensure all headings inside the app shell are visibly white/light */
+.sl-main-content h1,
+.sl-main-content h2,
+.sl-main-content h3,
+.sl-main-content h4,
+.sl-main-content h5,
+.sl-main-content h6,
+.sl-main-content .font-heading {
+  color: var(--sl-text);
+}
+
+/* Page header paragraphs */
+.sl-main-content > div > p,
+.sl-main-content > div > div > p {
+  color: var(--sl-text-muted);
 }
 
 /* ╔══════════════════════════════════════════════════════════╗
@@ -791,44 +814,106 @@ h1, h2, h3, h4, h5, h6,
 /* Form controls */
 .sl-form-group { margin-bottom: 1.25rem; }
 
-.sl-form-group label {
+.sl-form-group label,
+.sl-form-group > label {
   font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-weight: 700;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--sl-text-muted);
+  /* Raised from --sl-text-muted to full --sl-text for legibility on dark cards */
+  color: var(--sl-text) !important;
   margin-bottom: 0.4rem;
   display: block;
 }
 
-.sl-form-control {
+/* Override Bootstrap dark-theme .form-control completely */
+.sl-form-control,
+.sl-form-control:not(:disabled) {
   width: 100%;
-  background: var(--sl-surface-3);
-  border: 1px solid var(--sl-border-solid);
-  border-radius: var(--sl-radius);
-  color: var(--sl-text);
-  font-family: var(--sl-font-body);
+  background: var(--sl-surface-3) !important;
+  border: 1px solid var(--sl-border-solid) !important;
+  border-radius: var(--sl-radius) !important;
+  color: var(--sl-text) !important;
+  font-family: var(--sl-font-body) !important;
   font-size: 0.9rem;
   padding: 0.65rem 0.9rem;
   transition: border-color var(--sl-transition), box-shadow var(--sl-transition);
   outline: none;
+  -webkit-text-fill-color: var(--sl-text);  /* Safari autofill colour fix */
+  box-shadow: none;
 }
 
-.sl-form-control::placeholder { color: var(--sl-text-dim); }
+.sl-form-control::placeholder { color: var(--sl-text-dim) !important; opacity: 1; }
 
-.sl-form-control:focus {
-  border-color: var(--sl-primary);
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
-  background: var(--sl-surface-2);
+.sl-form-control:focus,
+.sl-form-control:focus-visible {
+  border-color: var(--sl-primary) !important;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12) !important;
+  background: var(--sl-surface-2) !important;
+  color: var(--sl-text) !important;
+  outline: none;
 }
 
-.sl-form-control.is-invalid { border-color: var(--sl-danger); }
-.sl-form-control.is-invalid:focus { box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.12); }
+/* Autofill — browsers tint autofilled inputs with system colours */
+.sl-form-control:-webkit-autofill,
+.sl-form-control:-webkit-autofill:hover,
+.sl-form-control:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--sl-surface-3) inset !important;
+  -webkit-text-fill-color: var(--sl-text) !important;
+  caret-color: var(--sl-text);
+}
+
+.sl-form-control.is-invalid { border-color: var(--sl-danger) !important; }
+.sl-form-control.is-invalid:focus { box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.12) !important; }
 
 .sl-invalid-feedback {
   font-size: 0.78rem;
   color: var(--sl-danger);
   margin-top: 0.3rem;
+}
+
+/* Textarea variant */
+textarea.sl-form-control {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.6;
+}
+
+/* Select variant */
+select.sl-form-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%238b98a9' d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.85rem center !important;
+  padding-right: 2.5rem;
+}
+
+/* File input — Bootstrap dark makes this widget near-invisible */
+input[type="file"].sl-form-control {
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  color: var(--sl-text-muted) !important;
+}
+
+input[type="file"].sl-form-control::-webkit-file-upload-button,
+input[type="file"].sl-form-control::file-selector-button {
+  background: var(--sl-surface-3);
+  border: 1px solid var(--sl-border-solid);
+  border-radius: calc(var(--sl-radius) - 2px);
+  color: var(--sl-text);
+  font-family: var(--sl-font-body);
+  font-size: 0.8rem;
+  padding: 0.3rem 0.75rem;
+  margin-right: 0.75rem;
+  cursor: pointer;
+  transition: background var(--sl-transition), border-color var(--sl-transition);
+}
+
+input[type="file"].sl-form-control::-webkit-file-upload-button:hover,
+input[type="file"].sl-form-control::file-selector-button:hover {
+  background: var(--sl-surface-2);
+  border-color: var(--sl-primary);
+  color: var(--sl-primary);
 }
 
 /* ╔══════════════════════════════════════════════════════════╗
@@ -939,9 +1024,12 @@ h1, h2, h3, h4, h5, h6,
   border: 1px solid var(--sl-border-solid);
   border-radius: var(--sl-radius-lg);
   overflow: hidden;
+  /* Explicit text colour so Bootstrap dark never overrides inner content */
+  color: var(--sl-text);
 }
 
 .result-card .result-header {
+  background: var(--sl-surface-2);
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--sl-border-solid);
   display: flex;
@@ -949,17 +1037,32 @@ h1, h2, h3, h4, h5, h6,
   justify-content: space-between;
 }
 
-.result-card .result-header h5 {
+.result-card .result-header h5,
+.result-card .result-header h5 * {
   font-family: var(--sl-font-heading);
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.06em;
-  color: var(--sl-text);
+  color: var(--sl-text) !important;
   margin: 0;
 }
 
 .result-card .result-body {
   padding: 1.5rem;
+  color: var(--sl-text);
+}
+
+/* All text inside result cards is explicitly coloured */
+.result-card p,
+.result-card div,
+.result-card span:not(.confidence-pill):not(.section-eyebrow) {
+  color: inherit;
+}
+
+/* Labels inside result-card form groups */
+.result-card .sl-form-group label,
+.result-card .sl-form-group > label {
+  color: var(--sl-text) !important;
 }
 
 /* ╔══════════════════════════════════════════════════════════╗
