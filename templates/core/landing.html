@@ -1,0 +1,316 @@
+{% extends "base.html" %}
+{% load static core_filters %}
+
+{% block title %}Satellite Intelligence Platform{% endblock %}
+{% block meta_description %}SpaceLens AI — Classify satellite imagery with deep learning and IBM Granite LLM. Understand land-use, vegetation, water bodies and more.{% endblock %}
+
+{% block footer %}{% include "partials/_footer.html" with land_classes=land_classes %}{% endblock %}
+
+{% block content %}
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  HERO                                                    ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<section class="sl-hero" id="home">
+  <div class="container-xl position-relative" style="z-index:2;">
+    <div class="row align-items-center">
+
+      <div class="col-lg-7">
+        <div class="hero-content">
+
+          <!-- Badge -->
+          <div class="hero-badge">
+            <span class="pulse-dot"></span>
+            Powered by IBM watsonx.ai &amp; TensorFlow
+          </div>
+
+          <!-- Title -->
+          <h1 class="hero-title">
+            See Earth<br/>
+            From <span class="highlight">Space</span>,<br/>
+            Understand It With <span class="highlight">AI</span>
+          </h1>
+
+          <!-- Subtitle -->
+          <p class="hero-subtitle">
+            Upload a satellite image. Our trained deep learning model classifies terrain
+            in milliseconds. IBM Granite then generates a full environmental intelligence
+            report — land-use, ecology, human activity and risk assessment.
+          </p>
+
+          <!-- CTA buttons -->
+          <div class="hero-actions">
+            {% if user.is_authenticated %}
+              <a href="{% url 'prediction:predict' %}" class="btn btn-sl-primary btn-lg">
+                <i class="bi bi-cpu me-2"></i>Run Prediction
+              </a>
+              <a href="{% url 'dashboard:index' %}" class="btn btn-sl-outline btn-lg">
+                <i class="bi bi-speedometer2 me-2"></i>Dashboard
+              </a>
+            {% else %}
+              <a href="{% url 'accounts:register' %}" class="btn btn-sl-primary btn-lg">
+                <i class="bi bi-rocket-takeoff me-2"></i>Start Analysing
+              </a>
+              <a href="#how-it-works" class="btn btn-sl-outline btn-lg">
+                <i class="bi bi-play-circle me-2"></i>See How It Works
+              </a>
+            {% endif %}
+          </div>
+
+          <!-- Trust badges -->
+          <div class="d-flex align-items-center gap-3 flex-wrap mt-4"
+               style="font-size:0.78rem; color:var(--sl-text-muted);">
+            <span><i class="bi bi-shield-check text-cyan me-1"></i>Secure uploads</span>
+            <span><i class="bi bi-layers text-cyan me-1"></i>10 land-cover classes</span>
+            <span><i class="bi bi-graph-up text-cyan me-1"></i>94.7 % accuracy</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Decorative orbit rings (hidden on mobile) -->
+      <div class="col-lg-5 d-none d-lg-block">
+        <div class="hero-orb">
+          <div class="ring ring-1"><div class="dot"></div></div>
+          <div class="ring ring-2"><div class="dot"></div></div>
+          <div class="ring ring-3"><div class="dot"></div></div>
+          <div class="planet"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Gradient fade at bottom -->
+  <div style="position:absolute;bottom:0;left:0;right:0;height:120px;
+              background:linear-gradient(to bottom, transparent, var(--sl-bg));
+              z-index:2; pointer-events:none;"></div>
+</section>
+
+<!-- ── Divider ─────────────────────────────────────────────── -->
+<div class="divider-glow"></div>
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  STATISTICS                                              ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<section class="sl-section py-4" id="statistics">
+  <div class="container-xl">
+    <div class="glass-card py-3">
+      <div class="row g-0 text-center">
+
+        <div class="col-6 col-md-3 landing-stat border-end-md">
+          <div class="stat-num">{{ stats.models_run }}</div>
+          <div class="stat-desc">Predictions Run</div>
+        </div>
+
+        <div class="col-6 col-md-3 landing-stat border-end-md">
+          <div class="stat-num">{{ stats.images_analysed }}</div>
+          <div class="stat-desc">Images Analysed</div>
+        </div>
+
+        <div class="col-6 col-md-3 landing-stat border-end-md">
+          <div class="stat-num">{{ stats.accuracy }}</div>
+          <div class="stat-desc">Model Accuracy</div>
+        </div>
+
+        <div class="col-6 col-md-3 landing-stat">
+          <div class="stat-num">{{ stats.land_classes }}</div>
+          <div class="stat-desc">Land-Cover Classes</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Divider ─────────────────────────────────────────────── -->
+<div class="divider-glow"></div>
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  HOW IT WORKS                                            ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<section class="sl-section" id="how-it-works">
+  <div class="container-xl">
+
+    <div class="sl-section-header">
+      <span class="section-eyebrow">Workflow</span>
+      <h2>How SpaceLens AI Works</h2>
+      <p>From raw satellite image to actionable intelligence in seconds.</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="step-card">
+          <div class="step-number">01</div>
+          <h4>Upload Image</h4>
+          <p>Drag &amp; drop a satellite or aerial image (JPG, PNG, GeoTIFF).</p>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="step-card">
+          <div class="step-number">02</div>
+          <h4>Preprocess</h4>
+          <p>Image is resized, normalised and prepared for model inference.</p>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="step-card">
+          <div class="step-number">03</div>
+          <h4>Classify</h4>
+          <p>TensorFlow/Keras model outputs probability scores across 10 land-cover classes.</p>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="step-card">
+          <div class="step-number">04</div>
+          <h4>Granite Prompt</h4>
+          <p>Top-3 probabilities are sent to IBM Granite with an intelligence-report prompt.</p>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="step-card">
+          <div class="step-number">05</div>
+          <h4>Report</h4>
+          <p>Full AI report is saved to PostgreSQL and displayed with a probability chart.</p>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4 col-lg-2">
+        <div class="step-card">
+          <div class="step-number">06</div>
+          <h4>Download PDF</h4>
+          <p>One-click export of the complete intelligence report as a PDF document.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── Divider ─────────────────────────────────────────────── -->
+<div class="divider-glow"></div>
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  FEATURES                                                ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<section class="sl-section" id="features">
+  <div class="container-xl">
+
+    <div class="sl-section-header">
+      <span class="section-eyebrow">Capabilities</span>
+      <h2>Built for Satellite Intelligence</h2>
+      <p>Every feature designed for performance, clarity and real-world usability.</p>
+    </div>
+
+    <div class="row g-4">
+      {% for feature in features %}
+      <div class="col-12 col-sm-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="bi {{ feature.icon }}"></i>
+          </div>
+          <h4>{{ feature.title }}</h4>
+          <p>{{ feature.desc }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+<!-- ── Divider ─────────────────────────────────────────────── -->
+<div class="divider-glow"></div>
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  DETECTABLE CLASSES                                      ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<section class="sl-section" id="technology">
+  <div class="container-xl">
+
+    <div class="sl-section-header">
+      <span class="section-eyebrow">Land-Cover Classes</span>
+      <h2>What SpaceLens Detects</h2>
+      <p>Trained on the EuroSAT benchmark dataset — 10 distinct land-use categories.</p>
+    </div>
+
+    <div class="row g-3 justify-content-center">
+      {% for cls in land_classes %}
+      <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+        <div class="class-badge">
+          <i class="bi {{ cls.icon }}" style="color: {{ cls.color }};"></i>
+          <span>{{ cls.name }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Tech stack banner -->
+    <div class="glass-card mt-5 p-4">
+      <div class="row align-items-center g-4">
+        <div class="col-12 col-md-5">
+          <div style="font-family:var(--sl-font-heading);font-size:0.75rem;font-weight:700;
+                      letter-spacing:0.12em;text-transform:uppercase;color:var(--sl-text-muted);
+                      margin-bottom:0.5rem;">Powered By</div>
+          <h3 style="font-family:var(--sl-font-heading);font-size:1.4rem;font-weight:800;
+                     color:var(--sl-text);margin:0;">Production-Grade AI Stack</h3>
+        </div>
+        <div class="col-12 col-md-7">
+          <div class="d-flex flex-wrap gap-2">
+            {% for badge in "TensorFlow 2.16,Keras,IBM watsonx.ai,IBM Granite LLM,Django 4.2,PostgreSQL,Docker,WhiteNoise"|split:"," %}
+            <span style="background:var(--sl-surface-3);border:1px solid var(--sl-border-solid);
+                         border-radius:6px;padding:0.35rem 0.75rem;font-size:0.8rem;
+                         color:var(--sl-text-muted);">{{ badge }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── Divider ─────────────────────────────────────────────── -->
+<div class="divider-glow"></div>
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  CTA BANNER                                              ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+<section class="sl-section">
+  <div class="container-xl">
+    <div class="glass-card p-5 text-center"
+         style="background: radial-gradient(ellipse 100% 200% at 50% -30%,
+                rgba(56,189,248,0.08) 0%, transparent 70%),
+                rgba(13, 17, 23, 0.85);">
+      <span class="section-eyebrow d-inline-block mb-3">Get Started</span>
+      <h2 class="font-heading mb-3" style="font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;">
+        Ready to Analyse Satellite Images?
+      </h2>
+      <p style="color:var(--sl-text-muted);max-width:480px;margin:0 auto 2rem;font-size:1rem;">
+        Create your free account and run your first AI-powered satellite intelligence
+        report in under 60 seconds.
+      </p>
+      {% if user.is_authenticated %}
+        <a href="{% url 'prediction:predict' %}" class="btn btn-sl-primary btn-lg">
+          <i class="bi bi-cpu me-2"></i>Run New Prediction
+        </a>
+      {% else %}
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+          <a href="{% url 'accounts:register' %}" class="btn btn-sl-primary btn-lg">
+            <i class="bi bi-rocket-takeoff me-2"></i>Create Free Account
+          </a>
+          <a href="{% url 'accounts:login' %}" class="btn btn-sl-outline btn-lg">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

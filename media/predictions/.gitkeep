@@ -1,0 +1,3 @@
+# Placeholder — uploaded satellite images are stored here at runtime.
+# This directory is excluded from version control (.gitignore).
+# WhiteNoise does NOT serve files from media/; Django's MEDIA_URL does.

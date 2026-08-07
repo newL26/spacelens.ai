@@ -1,0 +1,64 @@
+{% load static %}
+<footer class="sl-footer">
+  <div class="container-xl">
+    <div class="row g-4">
+
+      <!-- Brand column -->
+      <div class="col-12 col-md-4">
+        <div class="footer-brand">
+          <i class="bi bi-globe2 me-2"></i>SpaceLens<span style="color:#818cf8;">AI</span>
+        </div>
+        <p class="footer-desc mt-2">
+          AI-powered satellite image intelligence platform. Classify land-use, understand terrain,
+          and generate environmental insights from space.
+        </p>
+      </div>
+
+      <!-- Platform links -->
+      <div class="col-6 col-md-2 offset-md-1">
+        <h6 class="footer-heading">Platform</h6>
+        {% if user.is_authenticated %}
+          <a href="{% url 'dashboard:index' %}"  class="footer-link">Dashboard</a>
+          <a href="{% url 'prediction:predict' %}" class="footer-link">New Prediction</a>
+          <a href="{% url 'prediction:history' %}" class="footer-link">History</a>
+        {% else %}
+          <a href="{% url 'accounts:register' %}" class="footer-link">Get Started</a>
+          <a href="{% url 'accounts:login' %}"    class="footer-link">Sign In</a>
+        {% endif %}
+      </div>
+
+      <!-- Tech stack column -->
+      <div class="col-6 col-md-2">
+        <h6 class="footer-heading">Technology</h6>
+        <span class="footer-link">TensorFlow / Keras</span>
+        <span class="footer-link">IBM watsonx.ai</span>
+        <span class="footer-link">IBM Granite LLM</span>
+        <span class="footer-link">Django 4.2</span>
+        <span class="footer-link">PostgreSQL</span>
+      </div>
+
+      <!-- Classes column -->
+      <div class="col-12 col-md-3">
+        <h6 class="footer-heading">Detectable Classes</h6>
+        <div class="d-flex flex-wrap gap-1">
+          {% for cls in land_classes|default:"" %}
+            <span style="font-size:0.72rem;background:var(--sl-surface-3);border:1px solid var(--sl-border-solid);
+                         border-radius:4px;padding:0.15rem 0.5rem;color:var(--sl-text-muted);">
+              {{ cls.name }}
+            </span>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer bottom bar -->
+    <div class="footer-bottom">
+      <span>&copy; {% now "Y" %} SpaceLens AI. Built with IBM watsonx.ai &amp; TensorFlow.</span>
+      <div class="d-flex align-items-center gap-2">
+        <span class="pulse-dot"></span>
+        <span>All systems operational</span>
+      </div>
+    </div>
+  </div>
+</footer>

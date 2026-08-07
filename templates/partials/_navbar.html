@@ -1,0 +1,68 @@
+{% load static %}
+<nav class="sl-navbar navbar navbar-expand-lg">
+  <div class="container-xl">
+
+    <!-- Brand -->
+    <a class="navbar-brand" href="{% url 'core:landing' %}">
+      <div class="brand-icon">
+        <i class="bi bi-globe2"></i>
+      </div>
+      SpaceLens<span style="color:#818cf8;">AI</span>
+    </a>
+
+    <!-- Mobile toggle -->
+    <button class="navbar-toggler border-0 text-light" type="button"
+            data-bs-toggle="collapse" data-bs-target="#mainNav"
+            aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+      <i class="bi bi-list fs-4"></i>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNav">
+
+      {% if not request.resolver_match.app_name in 'dashboard prediction' %}
+      <!-- Landing-page nav links -->
+      <ul class="navbar-nav mx-auto gap-1">
+        <li class="nav-item">
+          <a class="nav-link" href="#features">Features</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#how-it-works">How It Works</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#technology">Technology</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#statistics">Statistics</a>
+        </li>
+      </ul>
+      {% endif %}
+
+      <!-- Auth controls -->
+      <div class="ms-auto d-flex align-items-center gap-2">
+        {% if user.is_authenticated %}
+          <span class="d-none d-md-flex align-items-center gap-2 me-2" style="font-size:0.82rem; color:var(--sl-text-muted);">
+            <span class="pulse-dot"></span>
+            {{ user.username }}
+          </span>
+          <a href="{% url 'dashboard:index' %}" class="btn btn-sl-outline btn-sm">
+            <i class="bi bi-speedometer2 me-1"></i>Dashboard
+          </a>
+          <form method="post" action="{% url 'accounts:logout' %}" class="d-inline m-0">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sl-primary btn-sm">
+              <i class="bi bi-box-arrow-right me-1"></i>Sign Out
+            </button>
+          </form>
+        {% else %}
+          <a href="{% url 'accounts:login' %}" class="btn btn-sl-outline btn-sm">
+            <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
+          </a>
+          <a href="{% url 'accounts:register' %}" class="btn btn-sl-primary btn-sm">
+            <i class="bi bi-rocket-takeoff me-1"></i>Get Started
+          </a>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,72 @@
+{% url 'dashboard:index' as url_dashboard %}
+{% url 'prediction:predict' as url_predict %}
+{% url 'prediction:history' as url_history %}
+{% url 'accounts:profile' as url_profile %}
+
+<aside class="sl-sidebar">
+
+  <!-- Brand -->
+  <div class="sidebar-brand">
+    <i class="bi bi-globe2"></i>
+    SpaceLens<span style="color:#818cf8;">AI</span>
+  </div>
+
+  <!-- Main navigation -->
+  <nav class="flex-grow-1">
+    <span class="nav-section-label">Navigation</span>
+
+    <a href="{{ url_dashboard }}" class="nav-link">
+      <i class="bi bi-speedometer2"></i>
+      <span>Overview</span>
+    </a>
+
+    <a href="{{ url_predict }}" class="nav-link">
+      <i class="bi bi-cpu"></i>
+      <span>New Prediction</span>
+    </a>
+
+    <a href="{{ url_history }}" class="nav-link">
+      <i class="bi bi-clock-history"></i>
+      <span>History</span>
+    </a>
+
+    <span class="nav-section-label mt-3">Account</span>
+
+    <a href="{{ url_profile }}" class="nav-link">
+      <i class="bi bi-person-circle"></i>
+      <span>Profile</span>
+    </a>
+
+    <a href="{% url 'accounts:settings' %}" class="nav-link">
+      <i class="bi bi-gear"></i>
+      <span>Settings</span>
+    </a>
+  </nav>
+
+  <!-- Bottom user info -->
+  <div class="px-4 pt-3 border-top" style="border-color: var(--sl-border-solid) !important;">
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <div style="width:34px;height:34px;background:linear-gradient(135deg,var(--sl-primary),var(--sl-accent));
+                  border-radius:50%;display:flex;align-items:center;justify-content:center;
+                  font-size:0.85rem;color:#fff;font-weight:700;flex-shrink:0;">
+        {{ request.user.username|first|upper }}
+      </div>
+      <div style="min-width:0;">
+        <div style="font-size:0.82rem;font-weight:600;color:var(--sl-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+          {{ request.user.get_full_name|default:request.user.username }}
+        </div>
+        <div style="font-size:0.72rem;color:var(--sl-text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+          {{ request.user.email }}
+        </div>
+      </div>
+    </div>
+
+    <form method="post" action="{% url 'accounts:logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-sl-outline w-100 btn-sm">
+        <i class="bi bi-box-arrow-right me-1"></i>Sign Out
+      </button>
+    </form>
+  </div>
+
+</aside>

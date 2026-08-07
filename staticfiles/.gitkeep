@@ -1,0 +1,2 @@
+# Static assets are collected here by `collectstatic`.
+# Served by WhiteNoise in production.
