@@ -101,11 +101,12 @@ def generate_prediction_report(prediction) -> bytes:
     # ── Helper styles ──────────────────────────────────────────────────────────
     def style(name, **kwargs) -> ParagraphStyle:
         base = styles.get(name, styles["Normal"])
+        # Merge defaults with caller overrides to avoid duplicate kwargs.
+        style_kwargs = {"textColor": C_TEXT, **kwargs}
         return ParagraphStyle(
             f"custom_{id(kwargs)}",
             parent=base,
-            textColor=C_TEXT,
-            **kwargs,
+            **style_kwargs,
         )
 
     h1 = style("Heading1", fontSize=22, textColor=C_CYAN,   spaceAfter=2,  leading=26)

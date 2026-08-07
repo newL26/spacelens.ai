@@ -120,7 +120,7 @@ DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="noreply@spacelens.ai")
 WATSONX_API_KEY = env("WATSONX_API_KEY", default="")
 WATSONX_PROJECT_ID = env("WATSONX_PROJECT_ID", default="")
 WATSONX_URL = env("WATSONX_URL", default="https://us-south.ml.cloud.ibm.com")
-WATSONX_MODEL_ID = env("WATSONX_MODEL_ID", default="ibm/granite-13b-instruct-v2")
+WATSONX_MODEL_ID = env("WATSONX_MODEL_ID", default="ibm/granite-4-h-small")
 
 # ── ML Model ─────────────────────────────────────────────────────────────────
 ML_MODEL_PATH = env("ML_MODEL_PATH", default=str(BASE_DIR / "ai" / "ml" / "model.keras"))
