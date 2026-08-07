@@ -1,2 +1,4 @@
 venv/
 .env*
+ai/ml/ResNet152V2_eurosat.h5
+media/*
