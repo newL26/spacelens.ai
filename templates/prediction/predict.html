@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}New Prediction{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="sl-app-layout">
+  {% include "partials/_sidebar.html" %}
+
+  <main class="sl-main-content">
+
+    <!-- Loading overlay (shown while submitting) -->
+    <div id="loadingOverlay" class="sl-loading-overlay d-none">
+      <div class="sl-loading-spinner"></div>
+      <div class="loading-text">Analysing satellite image…</div>
+      <div style="font-size:0.75rem;color:var(--sl-text-muted);margin-top:0.25rem;">
+        Running TensorFlow model &amp; IBM Granite LLM
+      </div>
+    </div>
+
+    <!-- Page header -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <div>
+        <h2 class="font-heading mb-1" style="font-size:1.3rem;font-weight:800;">
+          <i class="bi bi-cpu text-cyan me-2"></i>New Prediction
+        </h2>
+        <p class="mb-0" style="font-size:0.85rem;color:var(--sl-text-muted);">
+          Upload a satellite image and let the AI pipeline analyse it.
+        </p>
+      </div>
+      <a href="{% url 'prediction:history' %}" class="btn btn-sl-outline btn-sm">
+        <i class="bi bi-clock-history me-1"></i>View History
+      </a>
+    </div>
+
+    <div class="row g-4">
+
+      <!-- Upload column -->
+      <div class="col-12 col-lg-7">
+        <div class="result-card">
+          <div class="result-header">
+            <h5><i class="bi bi-cloud-upload me-2"></i>Upload Satellite Image</h5>
+          </div>
+          <div class="result-body">
+            <form method="post" enctype="multipart/form-data"
+                  id="predictForm" novalidate>
+              {% csrf_token %}
+
+              <!-- Drag & drop zone -->
+              <div id="uploadZone" class="upload-zone mb-3">
+                <i class="bi bi-satellite upload-icon d-block"></i>
+                <div class="upload-title">
+                  Drag &amp; drop your image here, or click to browse
+                </div>
+                <div class="upload-hint mt-1">
+                  JPG, PNG, GeoTIFF &nbsp;·&nbsp; Max {{ max_upload_mb|default:10 }} MB
+                </div>
+              </div>
+
+              <!-- Hidden file input rendered by Django form -->
+              {{ form.image }}
+
+              <!-- Form errors -->
+              {% if form.image.errors %}
+                <div class="sl-alert sl-alert-danger mb-3">
+                  <i class="bi bi-x-circle-fill flex-shrink-0"></i>
+                  <span>{{ form.image.errors|join:" " }}</span>
+                </div>
+              {% endif %}
+
+              <!-- Preview (hidden until file chosen) -->
+              <div id="previewWrap" class="d-none mb-3">
+                <div style="font-size:0.75rem;font-weight:600;letter-spacing:0.08em;
+                            text-transform:uppercase;color:var(--sl-text-muted);margin-bottom:0.4rem;">
+                  Preview
+                </div>
+                <img id="imagePreview" src="" alt="Preview"
+                     style="max-height:280px;max-width:100%;border-radius:var(--sl-radius);
+                            border:1px solid var(--sl-border-solid);object-fit:contain;" />
+              </div>
+
+              <button type="submit" class="btn btn-sl-primary w-100">
+                <i class="bi bi-cpu me-2"></i>Analyse Image
+              </button>
+
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info / tips column -->
+      <div class="col-12 col-lg-5">
+
+        <!-- Pipeline steps -->
+        <div class="result-card mb-4">
+          <div class="result-header">
+            <h5><i class="bi bi-diagram-3 me-2"></i>AI Pipeline</h5>
+          </div>
+          <div class="result-body">
+            <div class="d-flex flex-column gap-3">
+              {% for step in pipeline_steps %}
+              <div class="d-flex align-items-start gap-3">
+                <div style="width:32px;height:32px;background:rgba(56,189,248,0.1);
+                            border:1px solid rgba(56,189,248,0.25);border-radius:8px;
+                            display:flex;align-items:center;justify-content:center;
+                            font-size:0.8rem;color:var(--sl-primary);flex-shrink:0;">
+                  {{ forloop.counter }}
+                </div>
+                <div>
+                  <div style="font-size:0.84rem;font-weight:600;color:var(--sl-text);">
+                    {{ step.title }}
+                  </div>
+                  <div style="font-size:0.78rem;color:var(--sl-text-muted);line-height:1.6;">
+                    {{ step.desc }}
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Detectable classes -->
+        <div class="result-card">
+          <div class="result-header">
+            <h5><i class="bi bi-layers me-2"></i>Detectable Classes</h5>
+          </div>
+          <div class="result-body">
+            <div class="d-flex flex-wrap gap-2">
+              {% for cls in class_names %}
+              <span style="background:var(--sl-surface-3);border:1px solid var(--sl-border-solid);
+                           border-radius:6px;padding:0.25rem 0.6rem;font-size:0.78rem;
+                           color:var(--sl-text-muted);">
+                {{ cls }}
+              </span>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Profile{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="sl-app-layout">
+  {% include "partials/_sidebar.html" %}
+
+  <main class="sl-main-content">
+
+    <!-- Page header -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <div>
+        <h2 class="font-heading mb-1" style="font-size:1.3rem;font-weight:800;">
+          <i class="bi bi-person-circle text-cyan me-2"></i>My Profile
+        </h2>
+        <p class="mb-0" style="font-size:0.85rem;color:var(--sl-text-muted);">
+          Manage your personal information and avatar.
+        </p>
+      </div>
+    </div>
+
+    <div class="row g-4">
+
+      <!-- Left: avatar & identity card -->
+      <div class="col-12 col-lg-4">
+        <div class="result-card h-100">
+          <div class="result-header">
+            <h5><i class="bi bi-person me-2"></i>Identity</h5>
+          </div>
+          <div class="result-body text-center py-4">
+
+            <!-- Avatar circle or image -->
+            {% if profile.avatar %}
+              <img src="{{ profile.avatar.url }}"
+                   alt="{{ profile.display_name }}"
+                   class="rounded-circle mb-3 border"
+                   style="width:88px;height:88px;object-fit:cover;
+                          border-color:var(--sl-border-solid) !important;" />
+            {% else %}
+              <div class="mx-auto mb-3"
+                   style="width:88px;height:88px;border-radius:50%;
+                          background:linear-gradient(135deg,var(--sl-primary),var(--sl-accent));
+                          display:flex;align-items:center;justify-content:center;
+                          font-family:var(--sl-font-heading);font-size:2rem;
+                          font-weight:800;color:#fff;">
+                {{ profile.initials }}
+              </div>
+            {% endif %}
+
+            <div class="font-heading fw-bold" style="font-size:1.05rem;">
+              {{ profile.display_name }}
+            </div>
+            <div style="font-size:0.82rem;color:var(--sl-text-muted);">
+              {{ request.user.email }}
+            </div>
+
+            {% if profile.organisation %}
+            <div class="mt-2" style="font-size:0.82rem;color:var(--sl-text-muted);">
+              <i class="bi bi-building me-1"></i>{{ profile.organisation }}
+            </div>
+            {% endif %}
+
+            {% if profile.location %}
+            <div class="mt-1" style="font-size:0.82rem;color:var(--sl-text-muted);">
+              <i class="bi bi-geo-alt me-1"></i>{{ profile.location }}
+            </div>
+            {% endif %}
+
+            <hr style="border-color:var(--sl-border-solid);" />
+
+            <div class="d-flex justify-content-around text-center">
+              <div>
+                <div class="font-heading fw-bold" style="color:var(--sl-primary);">
+                  {{ request.user.prediction_set.count }}
+                </div>
+                <div style="font-size:0.7rem;color:var(--sl-text-muted);text-transform:uppercase;letter-spacing:0.08em;">
+                  Predictions
+                </div>
+              </div>
+              <div>
+                <div class="font-heading fw-bold" style="color:var(--sl-accent);">
+                  {{ request.user.date_joined|date:"Y" }}
+                </div>
+                <div style="font-size:0.7rem;color:var(--sl-text-muted);text-transform:uppercase;letter-spacing:0.08em;">
+                  Member Since
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: edit form -->
+      <div class="col-12 col-lg-8">
+        <div class="result-card">
+          <div class="result-header">
+            <h5><i class="bi bi-pencil-square me-2"></i>Edit Profile</h5>
+          </div>
+          <div class="result-body">
+            <form method="post" enctype="multipart/form-data" novalidate>
+              {% csrf_token %}
+
+              <div class="row g-3">
+
+                <div class="col-md-6">
+                  <div class="sl-form-group mb-0">
+                    <label for="{{ form.first_name.id_for_label }}">First Name</label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                      <div class="sl-invalid-feedback">{{ form.first_name.errors|join:" " }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="sl-form-group mb-0">
+                    <label for="{{ form.last_name.id_for_label }}">Last Name</label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                      <div class="sl-invalid-feedback">{{ form.last_name.errors|join:" " }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="sl-form-group mb-0">
+                    <label for="{{ form.email.id_for_label }}">Email Address</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                      <div class="sl-invalid-feedback">{{ form.email.errors|join:" " }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="sl-form-group mb-0">
+                    <label for="{{ form.organisation.id_for_label }}">Organisation</label>
+                    {{ form.organisation }}
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="sl-form-group mb-0">
+                    <label for="{{ form.location.id_for_label }}">Location</label>
+                    {{ form.location }}
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="sl-form-group mb-0">
+                    <label for="{{ form.website.id_for_label }}">Website</label>
+                    {{ form.website }}
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="sl-form-group mb-0">
+                    <label for="{{ form.bio.id_for_label }}">Bio</label>
+                    {{ form.bio }}
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="sl-form-group mb-0">
+                    <label for="{{ form.avatar.id_for_label }}">Avatar Image</label>
+                    {{ form.avatar }}
+                    <div style="font-size:0.75rem;color:var(--sl-text-muted);margin-top:0.3rem;">
+                      JPG, PNG — max 2 MB
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-sl-primary">
+                  <i class="bi bi-check-lg me-1"></i>Save Changes
+                </button>
+                <a href="{% url 'dashboard:index' %}" class="btn btn-sl-outline">
+                  Cancel
+                </a>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+{% endblock %}

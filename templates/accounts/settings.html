@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Account Settings{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="sl-app-layout">
+  {% include "partials/_sidebar.html" %}
+
+  <main class="sl-main-content">
+
+    <!-- Page header -->
+    <div class="mb-4">
+      <h2 class="font-heading mb-1" style="font-size:1.3rem;font-weight:800;">
+        <i class="bi bi-gear text-cyan me-2"></i>Account Settings
+      </h2>
+      <p class="mb-0" style="font-size:0.85rem;color:var(--sl-text-muted);">
+        Manage your username and password.
+      </p>
+    </div>
+
+    <div class="row g-4">
+
+      <!-- Change username -->
+      <div class="col-12 col-lg-6">
+        <div class="result-card">
+          <div class="result-header">
+            <h5><i class="bi bi-at me-2"></i>Change Username</h5>
+          </div>
+          <div class="result-body">
+            <form method="post" novalidate>
+              {% csrf_token %}
+              <input type="hidden" name="action" value="username" />
+
+              <div class="sl-form-group">
+                <label for="{{ username_form.username.id_for_label }}">Username</label>
+                {{ username_form.username }}
+                {% if username_form.username.errors %}
+                  <div class="sl-invalid-feedback">
+                    {{ username_form.username.errors|join:" " }}
+                  </div>
+                {% endif %}
+              </div>
+
+              <button type="submit" class="btn btn-sl-primary btn-sm">
+                <i class="bi bi-check-lg me-1"></i>Update Username
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Change password -->
+      <div class="col-12 col-lg-6">
+        <div class="result-card">
+          <div class="result-header">
+            <h5><i class="bi bi-key me-2"></i>Change Password</h5>
+          </div>
+          <div class="result-body">
+            <form method="post" novalidate>
+              {% csrf_token %}
+              <input type="hidden" name="action" value="password" />
+
+              <div class="sl-form-group">
+                <label for="{{ password_form.old_password.id_for_label }}">Current Password</label>
+                <input type="password" name="old_password"
+                       id="{{ password_form.old_password.id_for_label }}"
+                       class="sl-form-control" placeholder="Current password"
+                       autocomplete="current-password" />
+              </div>
+
+              <div class="sl-form-group">
+                <label for="{{ password_form.new_password1.id_for_label }}">New Password</label>
+                <input type="password" name="new_password1"
+                       id="{{ password_form.new_password1.id_for_label }}"
+                       class="sl-form-control" placeholder="New password"
+                       autocomplete="new-password" />
+              </div>
+
+              <div class="sl-form-group">
+                <label for="{{ password_form.new_password2.id_for_label }}">Confirm New Password</label>
+                <input type="password" name="new_password2"
+                       id="{{ password_form.new_password2.id_for_label }}"
+                       class="sl-form-control" placeholder="Repeat new password"
+                       autocomplete="new-password" />
+              </div>
+
+              <button type="submit" class="btn btn-sl-primary btn-sm">
+                <i class="bi bi-check-lg me-1"></i>Change Password
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Danger zone -->
+      <div class="col-12">
+        <div class="result-card" style="border-color:rgba(248,113,113,0.2);">
+          <div class="result-header" style="border-color:rgba(248,113,113,0.15);">
+            <h5 style="color:var(--sl-danger);">
+              <i class="bi bi-exclamation-triangle me-2"></i>Danger Zone
+            </h5>
+          </div>
+          <div class="result-body d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+              <div style="font-size:0.9rem;font-weight:600;color:var(--sl-text);">Delete Account</div>
+              <div style="font-size:0.82rem;color:var(--sl-text-muted);">
+                Permanently delete your account and all associated data. This cannot be undone.
+              </div>
+            </div>
+            <button class="btn btn-sm"
+                    style="border:1px solid var(--sl-danger);color:var(--sl-danger);
+                           background:rgba(248,113,113,0.06);border-radius:var(--sl-radius);
+                           font-size:0.8rem;font-weight:600;padding:0.45rem 1rem;"
+                    onclick="return confirm('Are you sure? This action cannot be undone.');">
+              <i class="bi bi-trash me-1"></i>Delete My Account
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+{% endblock %}
