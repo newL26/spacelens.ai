@@ -20,6 +20,9 @@ urlpatterns = [
 
     # Prediction engine
     path("predict/", include("prediction.urls", namespace="prediction")),
+
+    # PDF Reports
+    path("reports/", include("reports.urls", namespace="reports")),
 ]
 
 # Serve media files in development

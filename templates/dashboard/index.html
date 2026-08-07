@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="sl-app-layout">
+  {% include "partials/_sidebar.html" %}
+
+  <main class="sl-main-content">
+
+    <!-- ── Welcome header ─────────────────────────────────────────────── -->
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+      <div>
+        <h2 class="font-heading mb-1" style="font-size:1.3rem;font-weight:800;">
+          Mission Control
+          <span style="font-size:0.6em;font-weight:400;color:var(--sl-text-muted);
+                       display:inline-flex;align-items:center;gap:0.3rem;margin-left:0.6rem;">
+            <span class="pulse-dot"></span>Live
+          </span>
+        </h2>
+        <p class="mb-0" style="font-size:0.85rem;color:var(--sl-text-muted);">
+          Welcome back, <strong style="color:var(--sl-text);">
+            {{ request.user.get_full_name|default:request.user.username }}
+          </strong> — here's your intelligence overview.
+        </p>
+      </div>
+      <a href="{% url 'prediction:predict' %}" class="btn btn-sl-primary">
+        <i class="bi bi-cpu me-2"></i>New Prediction
+      </a>
+    </div>
+
+    <!-- ── Stat cards ──────────────────────────────────────────────────── -->
+    <div class="row g-3 mb-4">
+
+      <div class="col-6 col-xl-3">
+        <div class="stat-card">
+          <div class="stat-value">{{ stats.total }}</div>
+          <div class="stat-label">Total Predictions</div>
+          <i class="bi bi-cpu stat-icon"></i>
+        </div>
+      </div>
+
+      <div class="col-6 col-xl-3">
+        <div class="stat-card">
+          <div class="stat-value">{{ stats.avg_confidence }}%</div>
+          <div class="stat-label">Avg. Confidence</div>
+          <i class="bi bi-bar-chart-fill stat-icon"></i>
+        </div>
+      </div>
+
+      <div class="col-6 col-xl-3">
+        <div class="stat-card">
+          <div class="stat-value">{{ stats.last_30 }}</div>
+          <div class="stat-label">Last 30 Days</div>
+          <i class="bi bi-calendar3 stat-icon"></i>
+        </div>
+      </div>
+
+      <div class="col-6 col-xl-3">
+        <div class="stat-card">
+          <div class="stat-value"
+               style="font-size:1.2rem;white-space:nowrap;overflow:hidden;
+                      text-overflow:ellipsis;">
+            {{ stats.top_class }}
+          </div>
+          <div class="stat-label">Top Detected Class</div>
+          <i class="bi bi-layers stat-icon"></i>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Charts row ──────────────────────────────────────────────────── -->
+    <div class="row g-4 mb-4">
+
+      <!-- Activity chart -->
+      <div class="col-12 col-lg-8">
+        <div class="result-card h-100">
+          <div class="result-header">
+            <h5><i class="bi bi-activity me-2"></i>Prediction Activity</h5>
+            <span style="font-size:0.75rem;color:var(--sl-text-muted);">Last 14 days</span>
+          </div>
+          <div class="result-body" style="height:220px;position:relative;">
+            <canvas id="activityChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Class distribution -->
+      <div class="col-12 col-lg-4">
+        <div class="result-card h-100">
+          <div class="result-header">
+            <h5><i class="bi bi-pie-chart me-2"></i>Class Distribution</h5>
+          </div>
+          <div class="result-body">
+            {% if class_dist %}
+              {% for item in class_dist %}
+              <div class="mb-2">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span style="font-size:0.8rem;color:var(--sl-text);font-weight:500;
+                               white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+                               max-width:65%;">
+                    {{ item.predicted_class }}
+                  </span>
+                  <span style="font-size:0.75rem;color:var(--sl-text-muted);
+                               font-family:var(--sl-font-heading);">
+                    {{ item.count }}
+                  </span>
+                </div>
+                <div class="confidence-bar-wrap" style="height:5px;">
+                  <div class="confidence-bar"
+                       style="width:{% widthratio item.count stats.total 100 %}%;
+                              background:{% cycle 'var(--sl-primary)' 'var(--sl-secondary)' 'var(--sl-accent)' 'var(--sl-success)' 'var(--sl-warning)' %};"></div>
+                </div>
+              </div>
+              {% endfor %}
+            {% else %}
+              <div style="text-align:center;padding:2rem 0;
+                          font-size:0.85rem;color:var(--sl-text-dim);">
+                No predictions yet
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Recent predictions ──────────────────────────────────────────── -->
+    <div class="result-card">
+      <div class="result-header">
+        <h5><i class="bi bi-clock-history me-2"></i>Recent Predictions</h5>
+        <a href="{% url 'prediction:history' %}"
+           style="font-size:0.78rem;color:var(--sl-primary);text-decoration:none;">
+          View all <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+      </div>
+
+      {% if recent_predictions %}
+      <div class="result-body p-0">
+        <div class="row g-0">
+          {% for pred in recent_predictions %}
+          <div class="col-12 col-md-6 col-xl-4">
+            <a href="{% url 'prediction:result' pk=pred.pk %}"
+               style="display:block;text-decoration:none;
+                      padding:1rem 1.25rem;
+                      border-bottom:1px solid rgba(30,45,61,0.5);
+                      {% if not forloop.last %}border-right:none;{% endif %}
+                      transition:background var(--sl-transition);"
+               onmouseover="this.style.background='rgba(56,189,248,0.03)'"
+               onmouseout="this.style.background='transparent'">
+              <div class="d-flex align-items-center gap-3">
+
+                <!-- Thumbnail -->
+                <div style="flex-shrink:0;">
+                  <img src="{{ pred.image.url }}"
+                       alt="{{ pred.predicted_class }}"
+                       style="width:48px;height:48px;object-fit:cover;
+                              border-radius:8px;border:1px solid var(--sl-border-solid);" />
+                </div>
+
+                <!-- Info -->
+                <div style="min-width:0;flex:1;">
+                  <div style="font-family:var(--sl-font-heading);font-size:0.82rem;
+                               font-weight:700;color:var(--sl-text);
+                               white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                    {{ pred.predicted_class }}
+                  </div>
+                  <div class="d-flex align-items-center gap-2 mt-1">
+                    <span class="confidence-pill {{ pred.confidence_level }}"
+                          style="font-size:0.65rem;padding:0.15rem 0.45rem;">
+                      {{ pred.confidence|floatformat:1 }}%
+                    </span>
+                    <span style="font-size:0.72rem;color:var(--sl-text-dim);">
+                      {{ pred.created_at|timesince }} ago
+                    </span>
+                  </div>
+                </div>
+
+                <i class="bi bi-chevron-right"
+                   style="color:var(--sl-text-dim);font-size:0.8rem;flex-shrink:0;"></i>
+              </div>
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      {% else %}
+      <!-- Empty state -->
+      <div class="result-body text-center py-5">
+        <i class="bi bi-satellite"
+           style="font-size:2.5rem;color:var(--sl-text-dim);opacity:0.4;"></i>
+        <h5 class="font-heading mt-3 mb-1" style="font-size:0.95rem;color:var(--sl-text-muted);">
+          No predictions yet
+        </h5>
+        <p style="font-size:0.82rem;color:var(--sl-text-dim);">
+          Upload your first satellite image to begin.
+        </p>
+        <a href="{% url 'prediction:predict' %}" class="btn btn-sl-primary btn-sm mt-2">
+          <i class="bi bi-cpu me-1"></i>Run First Prediction
+        </a>
+      </div>
+      {% endif %}
+
+    </div>
+
+    <!-- ── Quick actions ───────────────────────────────────────────────── -->
+    <div class="row g-3 mt-1">
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <a href="{% url 'prediction:predict' %}"
+           class="d-flex align-items-center gap-3 p-3 result-card text-decoration-none"
+           style="transition:border-color var(--sl-transition),transform var(--sl-transition);"
+           onmouseover="this.style.transform='translateY(-2px)'"
+           onmouseout="this.style.transform='translateY(0)'">
+          <div style="width:42px;height:42px;background:rgba(56,189,248,0.1);
+                      border:1px solid rgba(56,189,248,0.25);border-radius:10px;
+                      display:flex;align-items:center;justify-content:center;
+                      font-size:1.1rem;color:var(--sl-primary);flex-shrink:0;">
+            <i class="bi bi-cpu"></i>
+          </div>
+          <div>
+            <div style="font-family:var(--sl-font-heading);font-size:0.82rem;
+                        font-weight:700;color:var(--sl-text);">New Prediction</div>
+            <div style="font-size:0.72rem;color:var(--sl-text-muted);">Upload &amp; Analyse</div>
+          </div>
+        </a>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <a href="{% url 'prediction:history' %}"
+           class="d-flex align-items-center gap-3 p-3 result-card text-decoration-none"
+           style="transition:border-color var(--sl-transition),transform var(--sl-transition);"
+           onmouseover="this.style.transform='translateY(-2px)'"
+           onmouseout="this.style.transform='translateY(0)'">
+          <div style="width:42px;height:42px;background:rgba(129,140,248,0.1);
+                      border:1px solid rgba(129,140,248,0.25);border-radius:10px;
+                      display:flex;align-items:center;justify-content:center;
+                      font-size:1.1rem;color:var(--sl-secondary);flex-shrink:0;">
+            <i class="bi bi-clock-history"></i>
+          </div>
+          <div>
+            <div style="font-family:var(--sl-font-heading);font-size:0.82rem;
+                        font-weight:700;color:var(--sl-text);">History</div>
+            <div style="font-size:0.72rem;color:var(--sl-text-muted);">Browse Past Reports</div>
+          </div>
+        </a>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <a href="{% url 'accounts:profile' %}"
+           class="d-flex align-items-center gap-3 p-3 result-card text-decoration-none"
+           style="transition:border-color var(--sl-transition),transform var(--sl-transition);"
+           onmouseover="this.style.transform='translateY(-2px)'"
+           onmouseout="this.style.transform='translateY(0)'">
+          <div style="width:42px;height:42px;background:rgba(167,139,250,0.1);
+                      border:1px solid rgba(167,139,250,0.25);border-radius:10px;
+                      display:flex;align-items:center;justify-content:center;
+                      font-size:1.1rem;color:var(--sl-accent);flex-shrink:0;">
+            <i class="bi bi-person-circle"></i>
+          </div>
+          <div>
+            <div style="font-family:var(--sl-font-heading);font-size:0.82rem;
+                        font-weight:700;color:var(--sl-text);">Profile</div>
+            <div style="font-size:0.72rem;color:var(--sl-text-muted);">Edit Your Details</div>
+          </div>
+        </a>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <a href="{% url 'accounts:settings' %}"
+           class="d-flex align-items-center gap-3 p-3 result-card text-decoration-none"
+           style="transition:border-color var(--sl-transition),transform var(--sl-transition);"
+           onmouseover="this.style.transform='translateY(-2px)'"
+           onmouseout="this.style.transform='translateY(0)'">
+          <div style="width:42px;height:42px;background:rgba(74,222,128,0.1);
+                      border:1px solid rgba(74,222,128,0.25);border-radius:10px;
+                      display:flex;align-items:center;justify-content:center;
+                      font-size:1.1rem;color:var(--sl-success);flex-shrink:0;">
+            <i class="bi bi-gear"></i>
+          </div>
+          <div>
+            <div style="font-family:var(--sl-font-heading);font-size:0.82rem;
+                        font-weight:700;color:var(--sl-text);">Settings</div>
+            <div style="font-size:0.72rem;color:var(--sl-text-muted);">Account &amp; Security</div>
+          </div>
+        </a>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  // ── Activity line chart ────────────────────────────────────────────────────
+  const actCtx = document.getElementById("activityChart");
+  if (actCtx && typeof Chart !== "undefined") {
+    new Chart(actCtx, {
+      type: "line",
+      data: {
+        labels: {{ activity_labels|safe }},
+        datasets: [{
+          label: "Predictions",
+          data:   {{ activity_values|safe }},
+          borderColor: "rgba(56, 189, 248, 0.9)",
+          backgroundColor: "rgba(56, 189, 248, 0.07)",
+          borderWidth: 2,
+          pointRadius: 3,
+          pointBackgroundColor: "rgba(56, 189, 248, 1)",
+          fill: true,
+          tension: 0.4,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: {
+            grid:  { color: "rgba(255,255,255,0.04)" },
+            ticks: { color: "#8b98a9", font: { family: "'Exo 2', sans-serif", size: 11 } }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              color: "#8b98a9",
+              font: { family: "'Exo 2', sans-serif", size: 11 }
+            },
+            grid: { color: "rgba(255,255,255,0.04)" }
+          }
+        }
+      }
+    });
+  }
+});
+</script>
+{% endblock %}
