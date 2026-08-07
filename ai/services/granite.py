@@ -50,7 +50,7 @@ class GraniteService:
 
         if self._api_key and self._project_id:
             self._client = self._build_client()
-            if self._client is None:
+            if self._client is None and self._fallback_reason == "unknown":
                 self._fallback_reason = "client_initialization_failed"
         else:
             self._fallback_reason = "missing_configuration"
